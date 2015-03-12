@@ -8,7 +8,8 @@ keep_md: true
 
 ## Loading and preprocessing the data
 
-```{r 1-loadPreprocess, echo =TRUE}
+
+```r
 ## File is downloaded and unziped in working directory
 if (! file.exists("activity.zip")){
         url = 'https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip'
@@ -20,15 +21,20 @@ if (! file.exists("activity.csv")){
         }
 ## Read Actvity data
 actData = read.csv("activity.csv", header= TRUE)
-
 ```
 
 ## What is mean total number of steps taken per day?
-``` {r 2-stepsperday, echo=TRUE}
+
+```r
 ##1. Calculate the total number of steps taken per day
 stepsPerDay = tapply(actData$steps, actData$date, sum)
 ##2. Make a histogram of the total number of steps taken each day
 hist(stepsPerDay)
+```
+
+![plot of chunk 2-stepsperday](figure/2-stepsperday-1.png) 
+
+```r
 ##3. Calculate and report the mean and median of the total number of steps taken per day
 meanStepsPerDay = tapply(actData$steps, actData$date, mean)
 medianStepsPerDay = tapply(actData$steps, actData$date ,median)
@@ -37,29 +43,36 @@ medianStepsPerDay = tapply(actData$steps, actData$date ,median)
 
 
 ## What is the average daily activity pattern?
-``` {r 3-activty, echo=TRUE}
+
+```r
 ## 1. Make a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
 ## To avoid NA causing a very high number values for '0' interval, remove the NAs before ploting the data.
 actNoNA = actData[!is.na(actData$steps) ,]
 meanStepsPerInterval = tapply(actNoNA$steps, actNoNA$interval, mean )
 plot(meanStepsPerInterval ,type="l")
+```
+
+![plot of chunk 3-activty](figure/3-activty-1.png) 
+
+```r
 ## 2. Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
 maxNumberInterval = actNoNA[which.max(meanStepsPerInterval), "interval"]
 ```
-The **interval with maximum number of steps** (after removing NAs) is **`r maxNumberInterval`** .
+The **interval with maximum number of steps** (after removing NAs) is **835** .
 
 ## Imputing missing values
 
-``` {r 4-countMissingData, echo=TRUE}
+
+```r
 ## There are a number of days/intervals where there are missing values (coded as NA). The NAs are substitute.
 ##1. Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with NAs)
 totalCount = nrow(actData)        
 missingValueCount= sum(is.na(actData$steps))
 ```
 
-### The total rows in original data set are `r totalCount` and missing value row count is `r missingValueCount`
-``` {r 5-filMissingData, echo=TRUE}
+### The total rows in original data set are 17568 and missing value row count is 2304
 
+```r
         ## 2. Strategy for filling in all of the missing values in the dataset is
         ##   Calculate the mean, min and max by interval after removing the NAs. 
         ##   Create new value based on random number generator 
@@ -88,6 +101,19 @@ missingValueCount= sum(is.na(actData$steps))
                 }
         ##  actUpdated is new data set with missing values filled. Sample values after update are
         head(actUpdated)
+```
+
+```
+##   steps       date interval
+## 1    24 2012-10-01        0
+## 2     2 2012-10-01        5
+## 3     1 2012-10-01       10
+## 4     7 2012-10-01       15
+## 5     0 2012-10-01       20
+## 6    17 2012-10-01       25
+```
+
+```r
         ## See data
         
         ## 4. Histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day. 
@@ -96,15 +122,20 @@ missingValueCount= sum(is.na(actData$steps))
         
         stepsPerDay2 = tapply(actUpdated$steps, actUpdated$interval, sum)
         hist(stepsPerDay2)
-        ### Do these values differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps?
+```
 
+![plot of chunk 5-filMissingData](figure/5-filMissingData-1.png) 
+
+```r
+        ### Do these values differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps?
 ```
 
 
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
-``` {r 6-WeekendDayCompare, echo=TRUE}
+
+```r
 #1. Create a new factor variable in the dataset with two levels - "weekday" and "weekend" indicating whether a given date is a weekday or weekend day.
 
         actUpdated2 <- cbind(actUpdated ,weekdays(as.POSIXct(actUpdated$date , format='%Y-%m-%d')))
@@ -145,7 +176,8 @@ missingValueCount= sum(is.na(actData$steps))
               layout = c(1,2))
 
         print(my.plot)
-
 ```
+
+![plot of chunk 6-WeekendDayCompare](figure/6-WeekendDayCompare-1.png) 
 ### During Weekend, there is more activity from 10:00 hrs to 13:00 hrs
 
