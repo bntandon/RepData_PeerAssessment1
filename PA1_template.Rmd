@@ -30,16 +30,24 @@ stepsPerDay = tapply(actData$steps, actData$date, sum)
 ##2. Make a histogram of the total number of steps taken each day
 hist(stepsPerDay)
 ##3. Calculate and report the mean and median of the total number of steps taken per day
-meanStepsPerDay = tapply(actData$steps, actData$date, mean)
-medianStepsPerDay = tapply(actData$steps, actData$date ,median)
-## create two vectors that has mean and medians for steps by date
-```
+datewiseData = aggregate( steps ~ interval , data=actData , sum, na.rm=TRUE)
+overallmean = mean(datewiseData$steps , na.rm =TRUE)
+overallmedian =median(datewiseData$steps , na.rm =TRUE)
 
+
+
+
+```
+Overall **mean** is `r overallmean` and **median** is `r overallmedian`
 
 ## What is the average daily activity pattern?
 ``` {r 3-activty, echo=TRUE}
 ## 1. Make a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
 ## To avoid NA causing a very high number values for '0' interval, remove the NAs before ploting the data.
+meanStepsPerDay = tapply(actData$steps, actData$date, mean)
+medianStepsPerDay = tapply(actData$steps, actData$date ,median)
+## create two vectors that has mean and medians for steps by date
+
 actNoNA = actData[!is.na(actData$steps) ,]
 meanStepsPerInterval = tapply(actNoNA$steps, actNoNA$interval, mean )
 plot(meanStepsPerInterval ,type="l")
@@ -57,7 +65,7 @@ totalCount = nrow(actData)
 missingValueCount= sum(is.na(actData$steps))
 ```
 
-### The total rows in original data set are `r totalCount` and missing value row count is `r missingValueCount`
+The **total rows** in original data set are `r totalCount` and **missing value row** count is `r missingValueCount`
 ``` {r 5-filMissingData, echo=TRUE}
 
         ## 2. Strategy for filling in all of the missing values in the dataset is
